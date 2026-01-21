@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TBS-SCHOOL - Evenements</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="nav-left">
+            <button class="nav-btn">Home</button>
+            <button class="nav-btn">Evenement</button>
+        </div>
+        <div class="nav-center">
+            <div class="logo">TBS-SCHOOL</div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn" onclick="window.location.href='/chatbot'">Chatbot</button>
+            <button class="nav-btn lang-btn">FR/ENG</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h1>Evenements à Toulouse</h1>
+            <p class="subtitle">
+                Découvrez les prochains événements à Toulouse et ses alentours. Concerts, spectacles, expositions et
+                activités culturelles sont proposés afin de vous aider à profiter pleinement de la vie culturelle
+                locale.
+            </p>
+        </div>
+
+        <div class="events-container">
+            <!-- Card 1 -->
+            <div class="event-card">
+                <div class="card-image-placeholder">
+                    <div class="date-badge">
+                        <span class="day">24</span>
+                        <span class="month">Avril</span>
+                    </div>
+                    <div class="cross-lines"></div>
+                </div>
+                <div class="card-content">
+                    <h3>Titre evenements :</h3>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Compans cafarelli, Toulouse</span>
+                    </div>
+                    <p class="description">
+                        um.Lorem ipsum dolor sit amet, consectetur aum.Lorem ipsum dolor sit amet, consectetur aum.Lorem
+                        ipsum dolor sit amet, consectetur a
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="event-card">
+                <div class="card-image-placeholder">
+                    <div class="date-badge">
+                        <span class="day">24</span>
+                        <span class="month">Avril</span>
+                    </div>
+                    <div class="cross-lines"></div>
+                </div>
+                <div class="card-content">
+                    <h3>Titre evenements :</h3>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Compans cafarelli, Toulouse</span>
+                    </div>
+                    <p class="description">
+                        um.Lorem ipsum dolor sit amet, consectetur aum.Lorem ipsum dolor sit amet, consectetur aum.Lorem
+                        ipsum dolor sit amet, consectetur a
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="event-card">
+                <div class="card-image-placeholder">
+                    <div class="date-badge">
+                        <span class="day">24</span>
+                        <span class="month">Avril</span>
+                    </div>
+                    <div class="cross-lines"></div>
+                </div>
+                <div class="card-content">
+                    <h3>Titre evenements :</h3>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Compans cafarelli, Toulouse</span>
+                    </div>
+                    <p class="description">
+                        um.Lorem ipsum dolor sit amet, consectetur aum.Lorem ipsum dolor sit amet, consectetur aum.Lorem
+                        ipsum dolor sit amet, consectetur a
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="event-card">
+                <div class="card-image-placeholder">
+                    <div class="date-badge">
+                        <span class="day">24</span>
+                        <span class="month">Avril</span>
+                    </div>
+                    <div class="cross-lines"></div>
+                </div>
+                <div class="card-content">
+                    <h3>Titre evenements :</h3>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Compans cafarelli, Toulouse</span>
+                    </div>
+                    <p class="description">
+                        um.Lorem ipsum dolor sit amet, consectetur aum.Lorem ipsum dolor sit amet, consectetur aum.Lorem
+                        ipsum dolor sit amet, consectetur a
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="cta-btn">Voir tous les evenements</button>
+        </div>
+    </main>
+</body>
+
+</html>
