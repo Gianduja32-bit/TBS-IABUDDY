@@ -30,7 +30,8 @@ load_dotenv(BASE_DIR / "django_site" / ".env")
 
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = SECRET_KEY = "django-insecure-dev-key-change-later"
+
 # Application definition
 
 INSTALLED_APPS = [

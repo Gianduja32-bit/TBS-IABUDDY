@@ -39,15 +39,16 @@ class BotBuddy:
         telle qu'elle existe dans le JSON actuel.
         """
         if not country:
-            return ""
+            return "Aucun pays fourni."
+
+        country = country.strip().lower()
 
         for c in self.countries_data:
             country_name = c.get("Country")
-            if country_name and country_name.lower() == country.lower():
-                # On retourne tout le bloc pays tel quel
+            if country_name and country_name.lower() == country:
                 return json.dumps(c, ensure_ascii=False, indent=2)
 
-        return ""
+        return f"Aucune correspondance trouvée pour : {country}"
 
     def talk(
         self,

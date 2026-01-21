@@ -6,82 +6,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TBS-SCHOOL - Chatbot</title>
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
-    <header>
-        <div class="nav-left">
-            <button class="nav-btn" onclick="window.location.href='/'">Home</button>
-            <button class="nav-btn" onclick="window.location.href='/'">Evenement</button>
-        </div>
-        <div class="nav-center">
-            <div class="logo">TBS-SCHOOL</div>
-        </div>
-        <div class="nav-right">
-            <button class="nav-btn active">Chatbot</button>
-            <button class="nav-btn lang-btn">FR/ENG</button>
-        </div>
-    </header>
 
-    <div class="chatbot-layout">
-        <aside class="sidebar">
-            <h2 class="sidebar-title">Vos chats</h2>
-            <ul class="chat-list">
-                <li class="chat-item">Chat 1</li>
-                <li class="chat-item">Chat 2</li>
-                <li class="chat-item">Chat 3</li>
-            </ul>
-        </aside>
-
-        <main class="chat-main">
-            <h2 class="chat-title">Al-Buddy</h2>
-
-            <div class="messages-container">
-                <!-- Bot Message -->
-                <div class="message bot-message">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed
-                        cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-                        ipsum.Lorem ipsum dolor sit amet, consectetur a</p>
-                </div>
-
-                <!-- User Message -->
-                <div class="message user-message">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed
-                        cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-                        ipsum.</p>
-                </div>
-
-                <!-- Bot Message -->
-                <div class="message bot-message">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed
-                        cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-                        ipsum.Lorem ipsum dolor sit amet, consectetur a</p>
-                </div>
-
-                <!-- User Message -->
-                <div class="message user-message">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed
-                        cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis
-                        ipsum.</p>
-                </div>
-            </div>
-
-            <div class="input-area">
-                <div class="input-wrapper">
-                    <div class="input-icon">
-                        <span class="tbs-circle">tbs</span>
-                    </div>
-                    <input type="text" placeholder="Poser une question">
-                    <button class="send-btn">
-                        <i class="fas fa-check"></i>
-                    </button>
-                </div>
-            </div>
-        </main>
+<header>
+    <div class="nav-left">
+        <button class="nav-btn" onclick="window.location.href='/'">Home</button>
+        <button class="nav-btn" onclick="window.location.href='/'">Événement</button>
     </div>
-</body>
+    <div class="nav-center">
+        <div class="logo">TBS-SCHOOL</div>
+    </div>
+    <div class="nav-right">
+        <button class="nav-btn active">Chatbot</button>
+        <button class="nav-btn lang-btn">FR / ENG</button>
+    </div>
+</header>
 
+<div class="chatbot-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Conversation</h2>
+        <ul class="chat-list">
+            <li class="chat-item active">Chat en cours</li>
+        </ul>
+    </aside>
+
+    <!-- Chat -->
+    <main class="chat-main">
+        <h2 class="chat-title">IA Buddy</h2>
+
+        <!-- Messages -->
+        <div class="messages-container" id="messages">
+            <div class="message bot-message">
+                <p>
+                    Bonjour 👋<br>
+                    Je suis IA Buddy.<br>
+                    Tu peux m’écrire librement sur les démarches administratives
+                    (visa, logement, CAF, université, transport, santé…).<br>
+                    Je te poserai des questions si j’ai besoin de précisions.
+                </p>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <div class="input-icon">
+                    <span class="tbs-circle">tbs</span>
+                </div>
+
+                <input
+                    type="text"
+                    id="user-input"
+                    placeholder="Écris ta question ici…"
+                    autocomplete="off"
+                    onkeydown="if(event.key === 'Enter') sendMessage()"
+                >
+
+                <button class="send-btn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const messages = document.getElementById("messages");
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    // Message utilisateur
+    const userMsg = document.createElement("div");
+    userMsg.className = "message user-message";
+    userMsg.innerHTML = `<p>${text}</p>`;
+    messages.appendChild(userMsg);
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+
+    // Message bot temporaire
+    const botMsg = document.createElement("div");
+    botMsg.className = "message bot-message";
+    botMsg.innerHTML = `<p>⏳ IA Buddy réfléchit...</p>`;
+    messages.appendChild(botMsg);
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+        const response = await fetch("/api/chatbot/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: new URLSearchParams({
+                message: text
+            })
+        });
+
+        const data = await response.json();
+        // Parse markdown to HTML
+        botMsg.innerHTML = marked.parse(data.response);
+    } catch (err) {
+        botMsg.innerHTML = `<p>❌ Erreur serveur. Réessaie.</p>`;
+    }
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function getCSRFToken() {
+    const name = "csrftoken=";
+    const cookies = document.cookie.split(";");
+    for (let c of cookies) {
+        c = c.trim();
+        if (c.startsWith(name)) {
+            return c.substring(name.length);
+        }
+    }
+    return "";
+}
+</script>
+
+</body>
 </html>
