@@ -25,8 +25,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-load_dotenv()
+load_dotenv(BASE_DIR / "django_site" / ".env")
 
+
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # Application definition
 

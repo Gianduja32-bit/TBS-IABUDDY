@@ -7,31 +7,86 @@ from django.conf import settings
 class BotBuddy:
     def __init__(
         self,
-        prompt_key="chatbot_iabuddy",
+        role="chatbot_iabuddy",
         model_name="models/gemini-2.5-flash",
-        temperature=1,
+        temperature=0.7,
     ):
-        # Config API Gemini
+        # Configuration Gemini
         genai.configure(api_key=settings.GEMINI_API_KEY)
 
-        # Charger le preprompt
+        # Chargement du JSON (roles + countries)
         base_dir = os.path.dirname(__file__)
-        preprompt_path = os.path.join(base_dir, "preprompt.json")
+        data_path = os.path.join(base_dir, "preprompt.json")
 
-        with open(preprompt_path, "r", encoding="utf-8") as f:
-            prompts = json.load(f)
+        with open(data_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
 
-        self.system_prompt = prompts.get(
-            prompt_key, "Tu es un assistant coopératif."
+        # Prompt système selon le rôle
+        self.system_prompt = data.get("roles", {}).get(
+            role,
+            "Tu es un assistant administratif utile."
         )
+
+        # Données pays (JSON brut, non normalisé)
+        self.countries_data = data.get("countries", [])
 
         self.model = genai.GenerativeModel(model_name)
         self.temperature = temperature
 
-    def talk(self, message: str) -> str:
+    def _get_country_context(self, country: str | None) -> str:
+        """
+        Recherche du pays en utilisant la clé 'Country'
+        telle qu'elle existe dans le JSON actuel.
+        """
+        if not country:
+            return ""
+
+        for c in self.countries_data:
+            country_name = c.get("Country")
+            if country_name and country_name.lower() == country.lower():
+                # On retourne tout le bloc pays tel quel
+                return json.dumps(c, ensure_ascii=False, indent=2)
+
+        return ""
+
+    def talk(
+        self,
+        message: str,
+        city: str | None = None,
+        country: str | None = None
+    ) -> str:
         try:
-            full_prompt = f"{self.system_prompt}\n\nUtilisateur : {message}"
-            response = self.model.generate_content(full_prompt)
+            country_context = self._get_country_context(country)
+
+            # Construction du message utilisateur
+            user_prompt = message
+            if city:
+                user_prompt = f"Ville : {city}\n{user_prompt}"
+            if country:
+                user_prompt = f"Pays : {country}\n{user_prompt}"
+
+            if not country_context:
+                country_context = (
+                    "Aucune règle spécifique trouvée pour ce pays. "
+                    "Demande des précisions à l'utilisateur si nécessaire."
+                )
+
+            # Prompt final envoyé au modèle
+            full_prompt = (
+                f"{self.system_prompt}\n\n"
+                f"Contexte administratif pour ce pays :\n"
+                f"{country_context}\n\n"
+                f"Question utilisateur :\n{user_prompt}"
+            )
+
+            response = self.model.generate_content(
+                full_prompt,
+                generation_config={"temperature": self.temperature},
+            )
+
             return response.text.strip()
+
         except Exception as e:
-            return f"Erreur : {e}"
+            return f"ERREUR GEMINI : {e}"
+
+
