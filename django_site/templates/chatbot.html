@@ -15,129 +15,139 @@
 
 <body>
 
-<header>
-    <div class="nav-left">
-        <button class="nav-btn" onclick="window.location.href='/'">Home</button>
-        <button class="nav-btn" onclick="window.location.href='/'">Événement</button>
-    </div>
-    <div class="nav-center">
-        <div class="logo">TBS-SCHOOL</div>
-    </div>
-    <div class="nav-right">
-        <button class="nav-btn active">Chatbot</button>
-        <button class="nav-btn lang-btn">FR / ENG</button>
-    </div>
-</header>
-
-<div class="chatbot-layout">
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2 class="sidebar-title">Conversation</h2>
-        <ul class="chat-list">
-            <li class="chat-item active">Chat en cours</li>
-        </ul>
-    </aside>
-
-    <!-- Chat -->
-    <main class="chat-main">
-        <h2 class="chat-title">IA Buddy</h2>
-
-        <!-- Messages -->
-        <div class="messages-container" id="messages">
-            <div class="message bot-message">
-                <p>
-                    Bonjour 👋<br>
-                    Je suis IA Buddy.<br>
-                    Tu peux m’écrire librement sur les démarches administratives
-                    (visa, logement, CAF, université, transport, santé…).<br>
-                    Je te poserai des questions si j’ai besoin de précisions.
-                </p>
-            </div>
+    <header>
+        <div class="nav-left">
+            <button class="nav-btn" onclick="window.location.href='/'">Home</button>
+            <button class="nav-btn" onclick="window.location.href='/'">Événement</button>
         </div>
+        <div class="nav-center">
+            <div class="logo">TBS-SCHOOL</div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn active">Chatbot</button>
+            <button class="nav-btn lang-btn">FR / ENG</button>
+        </div>
+    </header>
 
-        <!-- Input -->
-        <div class="input-area">
-            <div class="input-wrapper">
-                <div class="input-icon">
-                    <span class="tbs-circle">tbs</span>
+    <div class="chatbot-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Conversation</h2>
+            <ul class="chat-list">
+                <li class="chat-item active">Chat en cours</li>
+            </ul>
+        </aside>
+
+        <!-- Chat -->
+        <main class="chat-main">
+            <h2 class="chat-title">IA Buddy</h2>
+
+            <!-- Messages -->
+            <div class="messages-container" id="messages">
+                <div class="message bot-message">
+                    <p>
+                        Bonjour 👋<br>
+                        Je suis IA Buddy.<br>
+                        Tu peux m’écrire librement sur les démarches administratives
+                        (visa, logement, CAF, université, transport, santé…).<br>
+                        Je te poserai des questions si j’ai besoin de précisions.
+                    </p>
                 </div>
-
-                <input
-                    type="text"
-                    id="user-input"
-                    placeholder="Écris ta question ici…"
-                    autocomplete="off"
-                    onkeydown="if(event.key === 'Enter') sendMessage()"
-                >
-
-                <button class="send-btn" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
             </div>
-        </div>
-    </main>
 
-</div>
+            <!-- Input -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <div class="input-icon">
+                        <span class="tbs-circle">tbs</span>
+                    </div>
 
-<script>
-async function sendMessage() {
-    const input = document.getElementById("user-input");
-    const messages = document.getElementById("messages");
+                    <input type="text" id="user-input" placeholder="Écris ta question ici…" autocomplete="off"
+                        onkeydown="if(event.key === 'Enter') sendMessage()">
 
-    const text = input.value.trim();
-    if (!text) return;
+                    <button class="send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
 
-    // Message utilisateur
-    const userMsg = document.createElement("div");
-    userMsg.className = "message user-message";
-    userMsg.innerHTML = `<p>${text}</p>`;
-    messages.appendChild(userMsg);
+    </div>
 
-    input.value = "";
-    messages.scrollTop = messages.scrollHeight;
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const messages = document.getElementById("messages");
+            const sendBtn = document.querySelector(".send-btn");
 
-    // Message bot temporaire
-    const botMsg = document.createElement("div");
-    botMsg.className = "message bot-message";
-    botMsg.innerHTML = `<p>⏳ IA Buddy réfléchit...</p>`;
-    messages.appendChild(botMsg);
-    messages.scrollTop = messages.scrollHeight;
+            if (input.disabled) return; // Prevent double submit
 
-    try {
-        const response = await fetch("/api/chatbot/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": getCSRFToken()
-            },
-            body: new URLSearchParams({
-                message: text
-            })
-        });
+            const text = input.value.trim();
+            if (!text) return;
 
-        const data = await response.json();
-        // Parse markdown to HTML
-        botMsg.innerHTML = marked.parse(data.response);
-    } catch (err) {
-        botMsg.innerHTML = `<p>❌ Erreur serveur. Réessaie.</p>`;
-    }
+            // Message utilisateur
+            const userMsg = document.createElement("div");
+            userMsg.className = "message user-message";
+            userMsg.innerHTML = `<p>${text}</p>`;
+            messages.appendChild(userMsg);
 
-    messages.scrollTop = messages.scrollHeight;
-}
+            input.value = "";
+            messages.scrollTop = messages.scrollHeight;
 
-function getCSRFToken() {
-    const name = "csrftoken=";
-    const cookies = document.cookie.split(";");
-    for (let c of cookies) {
-        c = c.trim();
-        if (c.startsWith(name)) {
-            return c.substring(name.length);
+            // Message bot temporaire
+            const botMsg = document.createElement("div");
+            botMsg.className = "message bot-message";
+            botMsg.innerHTML = `<p>⏳ IA Buddy réfléchit...</p>`;
+            messages.appendChild(botMsg);
+            messages.scrollTop = messages.scrollHeight;
+
+            // Disable input
+            input.disabled = true;
+            sendBtn.disabled = true;
+            input.placeholder = "IA Buddy réfléchit...";
+
+            try {
+                const response = await fetch("/api/chatbot/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: new URLSearchParams({
+                        message: text
+                    })
+                });
+
+                const data = await response.json();
+                // Parse markdown to HTML
+                botMsg.innerHTML = marked.parse(data.response);
+            } catch (err) {
+                botMsg.innerHTML = `<p>❌ Erreur serveur. Réessaie.</p>`;
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.placeholder = "Écris ta question ici…";
+                input.focus();
+            }
+
+            messages.scrollTop = messages.scrollHeight;
         }
-    }
-    return "";
-}
-</script>
+
+        function getCSRFToken() {
+            const name = "csrftoken=";
+            const cookies = document.cookie.split(";");
+            for (let c of cookies) {
+                c = c.trim();
+                if (c.startsWith(name)) {
+                    return c.substring(name.length);
+                }
+            }
+            return "";
+        }
+    </script>
 
 </body>
+
 </html>

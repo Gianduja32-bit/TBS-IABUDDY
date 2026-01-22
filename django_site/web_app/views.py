@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
 import requests
+import time
 
 
 def home(request):
@@ -46,8 +47,8 @@ def chatbot_api(request):
         full_message = f"System Instruction: {system_instruction}\n\nUser Message: {message}"
 
         # Call Gemini API via REST
-        # Using gemini-flash-latest as 2.0-flash was rate limited (429)
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
+        # Switching to gemini-2.0-flash as confirmed by list_models.py
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
         data = {
             "contents": [{
@@ -55,24 +56,36 @@ def chatbot_api(request):
             }]
         }
         
-        try:
-            response = requests.post(url, headers=headers, json=data)
-            
-            if response.status_code == 429:
-                 return JsonResponse({"response": "Trop de requêtes. L'IA s'est endormie, réessaie dans une minute."}, status=429)
-
-            response.raise_for_status()
-            result = response.json()
-            # Extract text from response
+        max_retries = 3
+        for attempt in range(max_retries):
             try:
-                bot_response = result['candidates'][0]['content']['parts'][0]['text']
-            except (KeyError, IndexError):
-                bot_response = "Je n'ai pas compris la réponse de l'IA."
+                response = requests.post(url, headers=headers, json=data)
                 
-            return JsonResponse({"response": bot_response})
-            
-        except requests.RequestException as e:
-            print(f"Gemini API Exception: {e}")
-            return JsonResponse({"response": "Une erreur est survenue."}, status=500)
+                if response.status_code == 429:
+                    if attempt < max_retries - 1:
+                        # Increased backoff: 2s, 4s, 8s...
+                        wait_time = 2 ** (attempt + 1)
+                        print(f"Rate limited (429). Retrying in {wait_time}s...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        print("Max retries reached for 429 error.")
+                        return JsonResponse({"response": "Trop de requêtes. L'IA s'est endormie, réessaie dans une minute."}, status=429)
+
+                response.raise_for_status()
+                result = response.json()
+                # Extract text from response
+                try:
+                    bot_response = result['candidates'][0]['content']['parts'][0]['text']
+                except (KeyError, IndexError):
+                    bot_response = "Je n'ai pas compris la réponse de l'IA."
+                    
+                return JsonResponse({"response": bot_response})
+                
+            except requests.RequestException as e:
+                print(f"Gemini API Exception: {e}")
+                if response is not None:
+                     print(f"Response content: {response.text}")
+                return JsonResponse({"response": "Une erreur est survenue."}, status=500)
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
